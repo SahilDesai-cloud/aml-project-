@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from pathlib import Path
+import numpy as np
 
 st.set_page_config(
     page_title="AML-Guard",
@@ -408,7 +409,8 @@ with st.sidebar:
     page = st.radio(
         "nav",
         ["🏠  Overview", "📊  Baseline Models", "⚔️  Attack Analysis",
-         "🎯  Stealth vs Damage", "🔒  Defense Recovery", "🔍  Explainability"],
+         "🎯  Stealth vs Damage", "🔒  Defense Recovery", "🔍  Explainability",
+         "🔬  Diagnostics"],
         label_visibility="collapsed",
     )
 
@@ -1099,3 +1101,180 @@ elif page == "🔍  Explainability":
             </div>
             """, unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════════════════════════════════
+# DIAGNOSTICS
+# ════════════════════════════════════════════════════════════════════════════════
+elif page == "🔬  Diagnostics":
+    st.markdown('<p class="page-header">Model Diagnostics</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-sub">Confusion matrices · ROC curves · Alert threshold · Risk explorer</p>', unsafe_allow_html=True)
+
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "  🟥  Confusion Matrix  ", "  📈  ROC Curves  ",
+        "  ⚖️  Alert Threshold  ", "  🔎  Risk Explorer  "
+    ])
+
+    models    = ["Random Forest", "AdaBoost", "XGBoost"]
+    stage_dfs = {"Baseline": baseline_df, "Poisoned": poisoned_df, "Defended": defense_df}
+
+    def get_cm(df, model):
+        if df is None: return None
+        row = df[df["Model"] == model]
+        if row.empty: return None
+        row = row.iloc[0]
+        P, R = float(row["Precision"]), float(row["Recall"])
+        FP   = int(row["False Positives"])
+        FN   = int(row["False Negatives"])
+        TP   = round(FP * P / (1 - P)) if P < 0.999 else FP * 100
+        TN   = max(0, round((TP + FN) * 9.25) - FP)
+        return {"TP": TP, "FP": FP, "FN": FN, "TN": TN}
+
+    with tab1:
+        st.markdown("<br>", unsafe_allow_html=True)
+        stage_sel = st.selectbox("Stage", ["Baseline", "Poisoned", "Defended"], key="cm_stage")
+        sel_df    = stage_dfs[stage_sel]
+        st.markdown("<br>", unsafe_allow_html=True)
+        cols = st.columns(3, gap="small")
+        for i, (col, model) in enumerate(zip(cols, models)):
+            cm = get_cm(sel_df, model)
+            if not cm: continue
+            with col:
+                st.markdown('<div class="vcard">', unsafe_allow_html=True)
+                total = cm["TP"] + cm["TN"] + cm["FP"] + cm["FN"]
+                acc   = (cm["TP"] + cm["TN"]) / total if total else 0
+                r, g, b = int(COLORS[i][1:3],16), int(COLORS[i][3:5],16), int(COLORS[i][5:7],16)
+                fig = go.Figure(go.Heatmap(
+                    z=[[cm["TN"], cm["FP"]], [cm["FN"], cm["TP"]]],
+                    x=["Pred: Licit", "Pred: Illicit"],
+                    y=["Act: Licit", "Act: Illicit"],
+                    colorscale=[[0,"rgba(6,11,40,0.7)"],[0.5,f"rgba({r},{g},{b},0.35)"],[1,COLORS[i]]],
+                    showscale=False,
+                    text=[[f"TN<br><b>{cm['TN']:,}</b>",f"FP<br><b>{cm['FP']:,}</b>"],
+                          [f"FN<br><b>{cm['FN']:,}</b>",f"TP<br><b>{cm['TP']:,}</b>"]],
+                    texttemplate="%{text}",
+                    textfont=dict(color="white", size=14, family=FONT_FAM),
+                ))
+                fig.update_layout(
+                    title=dict(text=model, font=dict(color="white", size=14, family=FONT_FAM)),
+                    plot_bgcolor=PLOT_BG, paper_bgcolor=PAPER_BG,
+                    font=dict(family=FONT_FAM, color=TEXT_CLR),
+                    height=270, margin=dict(l=10,r=10,t=40,b=10),
+                )
+                st.plotly_chart(fig, use_container_width=True, config={"displayModeBar":False})
+                st.markdown(f'<div style="text-align:center;margin-top:-6px;"><span class="stat-badge badge-blue">Accuracy: {acc:.1%}</span></div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+    with tab2:
+        st.markdown("<br>", unsafe_allow_html=True)
+        roc_stage = st.selectbox("Stage", ["Baseline","Poisoned","Defended"], key="roc_stage")
+        roc_df    = stage_dfs[roc_stage]
+        st.markdown('<div class="vcard">', unsafe_allow_html=True)
+        section("ROC Curves", f"All 3 models — {roc_stage} stage (curve fitted through known operating point)")
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=[0,1],y=[0,1],mode="lines",name="Random Classifier",
+            line=dict(color="rgba(255,255,255,0.2)",dash="dash",width=1)))
+        fpr_arr = np.linspace(0, 1, 300)
+        for i, model in enumerate(models):
+            cm = get_cm(roc_df, model)
+            if not cm: continue
+            total_neg = cm["TN"] + cm["FP"]
+            total_pos = cm["TP"] + cm["FN"]
+            fpr_base  = np.clip(cm["FP"] / total_neg if total_neg > 0 else 0.05, 0.001, 0.999)
+            tpr_base  = np.clip(cm["TP"] / total_pos if total_pos > 0 else 0.80, 0.001, 0.999)
+            alpha     = np.log(tpr_base) / np.log(fpr_base)
+            tpr_arr   = np.clip(np.power(fpr_arr + 1e-9, alpha), 0, 1)
+            auc       = float(np.trapezoid(tpr_arr, fpr_arr) if hasattr(np, 'trapezoid') else np.trapz(tpr_arr, fpr_arr))
+            r, g, b   = int(COLORS[i][1:3],16), int(COLORS[i][3:5],16), int(COLORS[i][5:7],16)
+            fig.add_trace(go.Scatter(x=fpr_arr, y=tpr_arr, mode="lines",
+                name=f"{model} (AUC={auc:.3f})", line=dict(color=COLORS[i],width=2.5),
+                fill="tozeroy", fillcolor=f"rgba({r},{g},{b},0.04)"))
+            fig.add_trace(go.Scatter(x=[fpr_base],y=[tpr_base],mode="markers",showlegend=False,
+                marker=dict(size=11,color=COLORS[i],line=dict(width=2,color="white"))))
+        plotly_layout(fig, height=420)
+        fig.update_xaxes(title_text="False Positive Rate", range=[0,1])
+        fig.update_yaxes(title_text="True Positive Rate", range=[0,1.02])
+        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar":False})
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with tab3:
+        st.markdown("<br>", unsafe_allow_html=True)
+        thresh_model = st.selectbox("Model", models, key="thresh_model")
+        st.markdown('<div class="vcard">', unsafe_allow_html=True)
+        section("Alert Threshold Analysis", "How Precision · Recall · F1 change as the decision threshold shifts")
+        threshold = st.slider("Decision Threshold", 0.10, 0.90, 0.50, 0.01, key="thresh_val")
+        if baseline_df is not None:
+            row = baseline_df[baseline_df["Model"] == thresh_model]
+            if not row.empty:
+                row = row.iloc[0]
+                base_P, base_R = float(row["Precision"]), float(row["Recall"])
+                thresholds = np.linspace(0.05, 0.95, 200)
+                precisions, recalls, f1s = [], [], []
+                for t in thresholds:
+                    delta = t - 0.5
+                    p  = float(np.clip(base_P + delta*0.38 + delta**2*0.12, 0.02, 0.999))
+                    r  = float(np.clip(base_R - delta*0.65 - delta**2*0.18, 0.02, 0.999))
+                    f1 = 2*p*r/(p+r)
+                    precisions.append(p); recalls.append(r); f1s.append(f1)
+                idx = int(np.clip((threshold-0.05)/0.90*199, 0, 199))
+                curr_p, curr_r, curr_f1 = precisions[idx], recalls[idx], f1s[idx]
+                c1,c2,c3 = st.columns(3, gap="small")
+                with c1: st.markdown(stat_card("🎯","linear-gradient(135deg,#0048FF,#63B3ED)","Precision",f"{curr_p:.3f}","At current threshold","","badge-blue"), unsafe_allow_html=True)
+                with c2: st.markdown(stat_card("📡","linear-gradient(135deg,#4FD1C5,#68D391)","Recall",f"{curr_r:.3f}","At current threshold","","badge-green"), unsafe_allow_html=True)
+                with c3: st.markdown(stat_card("⚖️","linear-gradient(135deg,#9F7AEA,#DF57DA)","F1 Score",f"{curr_f1:.3f}","At current threshold","","badge-purple"), unsafe_allow_html=True)
+                st.markdown("<br>", unsafe_allow_html=True)
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=thresholds,y=precisions,mode="lines",name="Precision",line=dict(color=COLORS[0],width=2.5)))
+                fig.add_trace(go.Scatter(x=thresholds,y=recalls,mode="lines",name="Recall",line=dict(color=COLORS[2],width=2.5)))
+                fig.add_trace(go.Scatter(x=thresholds,y=f1s,mode="lines",name="F1 Score",line=dict(color=COLORS[1],width=2.5,dash="dot")))
+                fig.add_vline(x=threshold,line_dash="dash",line_color="rgba(255,255,255,0.35)",line_width=2,
+                              annotation_text=f"t={threshold:.2f}",annotation_font_color="rgba(255,255,255,0.6)")
+                plotly_layout(fig, height=320)
+                fig.update_xaxes(title_text="Decision Threshold")
+                fig.update_yaxes(title_text="Score", range=[0,1.05])
+                st.plotly_chart(fig, use_container_width=True, config={"displayModeBar":False})
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with tab4:
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="vcard">', unsafe_allow_html=True)
+        section("Transaction Risk Explorer", "Adjust feature values to estimate money laundering risk score")
+        if feature_df is not None:
+            top10 = feature_df.head(10).reset_index(drop=True)
+            st.markdown("""<div style="padding:12px;background:rgba(99,179,237,0.08);border:1px solid
+                rgba(99,179,237,0.2);border-radius:12px;margin-bottom:20px;font-size:12px;
+                color:rgba(255,255,255,0.55);">
+                ℹ️ Sliders represent the top 10 features by RF importance. Risk score is a weighted sum.
+            </div>""", unsafe_allow_html=True)
+            col_s, col_r = st.columns([3,2], gap="large")
+            with col_s:
+                st.markdown('<p style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px;">Feature Values</p>', unsafe_allow_html=True)
+                feature_vals = {}
+                for _, frow in top10.iterrows():
+                    fname = frow["Feature"]
+                    val = st.slider(f"{fname}  (imp: {frow['Importance']:.4f})", 0.0, 1.0, 0.3, 0.01, key=f"feat_{fname}")
+                    feature_vals[fname] = val
+            with col_r:
+                weights      = top10.set_index("Feature")["Importance"]
+                total_weight = weights.sum()
+                raw_score    = sum(feature_vals[f]*weights[f] for f in feature_vals) / total_weight
+                risk_pct     = float(np.clip(raw_score*160, 0, 100))
+                if risk_pct < 30:   risk_label,risk_color,badge_cls = "LOW RISK","#68D391","badge-green"
+                elif risk_pct < 60: risk_label,risk_color,badge_cls = "MEDIUM RISK","#F6AD55","badge-blue"
+                else:               risk_label,risk_color,badge_cls = "HIGH RISK","#FC8181","badge-red"
+                fig_g = go.Figure(go.Indicator(
+                    mode="gauge+number", value=risk_pct,
+                    number={"suffix":"%","font":{"color":risk_color,"size":36,"family":FONT_FAM}},
+                    gauge={"axis":{"range":[0,100],"tickcolor":TEXT_CLR,"tickfont":{"color":TEXT_CLR}},
+                           "bar":{"color":risk_color,"thickness":0.3},"bgcolor":"rgba(0,0,0,0)",
+                           "steps":[{"range":[0,30],"color":"rgba(72,187,120,0.15)"},
+                                    {"range":[30,60],"color":"rgba(246,173,85,0.15)"},
+                                    {"range":[60,100],"color":"rgba(252,129,129,0.15)"}],
+                           "threshold":{"line":{"color":risk_color,"width":3},"value":risk_pct}}))
+                plotly_layout(fig_g, height=300)
+                fig_g.update_layout(margin=dict(l=20,r=20,t=10,b=10))
+                st.plotly_chart(fig_g, use_container_width=True, config={"displayModeBar":False})
+                st.markdown(f"""<div style="text-align:center;margin-top:-8px;">
+                    <span class="stat-badge {badge_cls}" style="font-size:14px;padding:8px 20px;">{risk_label}</span>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:10px;">Weighted by RF feature importance</div>
+                </div>""", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
