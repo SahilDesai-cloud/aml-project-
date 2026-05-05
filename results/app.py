@@ -21,13 +21,13 @@ html, body, [class*="css"] {
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .stApp {
-    background: linear-gradient(135deg, #060b26 0%, #0b1437 50%, #0d1b4b 100%);
+    background: #060b26;
     min-height: 100vh;
 }
 
 /* ── Sidebar shell ── */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg,#080e2e 0%,#0b1437 60%,#0a1230 100%) !important;
+    background: #080e2e !important;
     border-right: 1px solid rgba(255,255,255,0.07) !important;
     width: 260px !important;
 }
@@ -77,7 +77,7 @@ label[data-baseweb="radio"]:hover {
 
 /* ── Active nav item ── */
 label[data-baseweb="radio"]:has(input:checked) {
-    background: linear-gradient(97.89deg,rgba(0,72,255,0.9) 0%,rgba(223,87,218,0.8) 100%) !important;
+    background: rgba(0,72,255,0.85) !important;
     border-color: rgba(99,179,237,0.3) !important;
     box-shadow: 0 4px 28px rgba(0,72,255,0.45), 0 1px 0 rgba(255,255,255,0.1) inset !important;
     transform: translateX(0) !important;
@@ -90,7 +90,7 @@ label[data-baseweb="radio"]:has(input:checked)::before {
     left: -1px; top: 20%; bottom: 20%;
     width: 4px;
     border-radius: 0 4px 4px 0;
-    background: linear-gradient(180deg,#4FD1C5,#63B3ED);
+    background: #4FD1C5;
     box-shadow: 0 0 8px #4FD1C5;
 }
 
@@ -123,7 +123,7 @@ label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer
 }
 .sb-logo-ring {
     width: 68px; height: 68px; border-radius: 20px;
-    background: linear-gradient(135deg,#0048FF,#DF57DA);
+    background: #0048FF;
     display: flex; align-items: center; justify-content: center;
     font-size: 32px;
     box-shadow: 0 0 0 4px rgba(0,72,255,0.15), 0 8px 32px rgba(0,72,255,0.35);
@@ -137,16 +137,14 @@ label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer
     border: 1px solid rgba(79,209,197,0.3);
 }
 .sb-brand-name {
-    font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 0.3px;
-    background: linear-gradient(90deg,#4FD1C5,#63B3ED);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-size: 18px; font-weight: 800; color: #4FD1C5; letter-spacing: 0.3px;
 }
 .sb-brand-sub {
     font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 3px; letter-spacing: 0.3px;
 }
 .sb-gradient-line {
     height: 1px; margin: 18px 20px 6px;
-    background: linear-gradient(90deg,transparent,rgba(99,179,237,0.4),rgba(223,87,218,0.4),transparent);
+    background: rgba(99,179,237,0.35);
 }
 .sb-section-label {
     font-size: 10px; font-weight: 700; letter-spacing: 2px;
@@ -203,7 +201,7 @@ label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer
 
 /* ── Glass card ── */
 .vcard {
-    background: linear-gradient(127.09deg,rgba(6,11,40,0.94) 19.41%,rgba(10,14,35,0.49) 76.65%);
+    background: rgba(6,11,40,0.94);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 20px;
     padding: 24px;
@@ -215,7 +213,7 @@ label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer
 
 /* ── Stat card ── */
 .stat-card {
-    background: linear-gradient(127.09deg,rgba(6,11,40,0.94) 19.41%,rgba(10,14,35,0.49) 76.65%);
+    background: rgba(6,11,40,0.94);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 20px;
     padding: 22px 20px;
@@ -257,9 +255,7 @@ label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer
 
 /* ── Page header ── */
 .page-header {
-    font-size: 28px; font-weight: 700; color: #fff;
-    background: linear-gradient(97.89deg,#4FD1C5 0%,#63B3ED 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-size: 28px; font-weight: 700; color: #4FD1C5;
     margin-bottom: 4px;
 }
 .page-sub { font-size:14px; color:rgba(255,255,255,0.45); margin-bottom:24px; }
@@ -281,7 +277,7 @@ label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer
     padding: 8px 22px;
 }
 .stTabs [aria-selected="true"] {
-    background: linear-gradient(97.89deg,#0048FF 0.59%,#DF57DA 100%) !important;
+    background: #0048FF !important;
     color: #fff !important;
     box-shadow: 0 4px 15px rgba(0,72,255,0.3);
 }
@@ -298,7 +294,7 @@ label[data-baseweb="radio"]:has(input:checked) [data-testid="stMarkdownContainer
 
 /* ── Metrics ── */
 [data-testid="stMetric"] {
-    background: linear-gradient(127.09deg,rgba(6,11,40,0.94) 19.41%,rgba(10,14,35,0.49) 76.65%);
+    background: rgba(6,11,40,0.94);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 18px;
     padding: 18px 22px;
@@ -480,13 +476,13 @@ if page == "🏠  Overview":
     best_f1 = f"{baseline_df['F1 Score'].max():.4f}" if baseline_df is not None else "—"
     c1, c2, c3, c4 = st.columns(4, gap="small")
     with c1:
-        st.markdown(stat_card("🤖","linear-gradient(135deg,#0048FF,#63B3ED)","Models Tested","3","RF · AdaBoost · XGBoost","Trained ✓","badge-blue"), unsafe_allow_html=True)
+        st.markdown(stat_card("🤖","#0048FF","Models Tested","3","RF · AdaBoost · XGBoost","Trained ✓","badge-blue"), unsafe_allow_html=True)
     with c2:
-        st.markdown(stat_card("🎯","linear-gradient(135deg,#9F7AEA,#DF57DA)","Best PR-AUC",best_pr,"XGBoost baseline","↑ 0.985","badge-purple"), unsafe_allow_html=True)
+        st.markdown(stat_card("🎯","#9F7AEA","Best PR-AUC",best_pr,"XGBoost baseline","↑ 0.985","badge-purple"), unsafe_allow_html=True)
     with c3:
-        st.markdown(stat_card("☠️","linear-gradient(135deg,#FC8181,#F6AD55)","Attack Types","2","Label Flip + Backdoor","Active","badge-red"), unsafe_allow_html=True)
+        st.markdown(stat_card("☠️","#FC8181","Attack Types","2","Label Flip + Backdoor","Active","badge-red"), unsafe_allow_html=True)
     with c4:
-        st.markdown(stat_card("🛡️","linear-gradient(135deg,#4FD1C5,#68D391)","Defense Stage","RONI","Data Sanitization","Completed ✓","badge-green"), unsafe_allow_html=True)
+        st.markdown(stat_card("🛡️","#4FD1C5","Defense Stage","RONI","Data Sanitization","Completed ✓","badge-green"), unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -547,11 +543,11 @@ if page == "🏠  Overview":
     st.markdown('<div class="vcard">', unsafe_allow_html=True)
     section("Research Pipeline", "5-stage methodology from raw data to defended model")
     steps = [
-        ("📥","Data Prep","linear-gradient(135deg,#63B3ED,#0048FF)","Elliptic dataset. 203k nodes, edge-list, features"),
-        ("🤖","Baseline","linear-gradient(135deg,#9F7AEA,#DF57DA)","RF, AdaBoost, XGBoost trained on clean data"),
-        ("☠️","Attacks","linear-gradient(135deg,#FC8181,#F6AD55)","Label flipping (5–25%) + backdoor injection"),
-        ("🛡️","Defense","linear-gradient(135deg,#4FD1C5,#68D391)","RONI data sanitization & retraining"),
-        ("🔍","Explain","linear-gradient(135deg,#68D391,#4FD1C5)","Feature importance shifts across stages"),
+        ("📥","Data Prep","#63B3ED","Elliptic dataset. 203k nodes, edge-list, features"),
+        ("🤖","Baseline","#9F7AEA","RF, AdaBoost, XGBoost trained on clean data"),
+        ("☠️","Attacks","#FC8181","Label flipping (5–25%) + backdoor injection"),
+        ("🛡️","Defense","#4FD1C5","RONI data sanitization & retraining"),
+        ("🔍","Explain","#68D391","Feature importance shifts across stages"),
     ]
     cols = st.columns(5, gap="small")
     for col, (icon, title, bg, desc) in zip(cols, steps):
@@ -577,10 +573,10 @@ elif page == "📊  Baseline Models":
     if baseline_df is not None:
         best = baseline_df.sort_values("PR-AUC", ascending=False).iloc[0]
         c1,c2,c3,c4 = st.columns(4, gap="small")
-        with c1: st.markdown(stat_card("🏆","linear-gradient(135deg,#F6AD55,#FC8181)","Best Model",best["Model"],"by PR-AUC","#1","badge-blue"), unsafe_allow_html=True)
-        with c2: st.markdown(stat_card("🎯","linear-gradient(135deg,#9F7AEA,#DF57DA)","Best PR-AUC",f"{best['PR-AUC']:.4f}",best["Model"],"XGBoost","badge-purple"), unsafe_allow_html=True)
-        with c3: st.markdown(stat_card("📈","linear-gradient(135deg,#4FD1C5,#63B3ED)","Best F1",f"{baseline_df['F1 Score'].max():.4f}","","↑ Top","badge-green"), unsafe_allow_html=True)
-        with c4: st.markdown(stat_card("🔁","linear-gradient(135deg,#68D391,#4FD1C5)","Best Recall",f"{baseline_df['Recall'].max():.4f}","","✓","badge-green"), unsafe_allow_html=True)
+        with c1: st.markdown(stat_card("🏆","#F6AD55","Best Model",best["Model"],"by PR-AUC","#1","badge-blue"), unsafe_allow_html=True)
+        with c2: st.markdown(stat_card("🎯","#9F7AEA","Best PR-AUC",f"{best['PR-AUC']:.4f}",best["Model"],"XGBoost","badge-purple"), unsafe_allow_html=True)
+        with c3: st.markdown(stat_card("📈","#4FD1C5","Best F1",f"{baseline_df['F1 Score'].max():.4f}","","↑ Top","badge-green"), unsafe_allow_html=True)
+        with c4: st.markdown(stat_card("🔁","#68D391","Best Recall",f"{baseline_df['Recall'].max():.4f}","","✓","badge-green"), unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
         col_a, col_b = st.columns([3,2], gap="small")
@@ -675,9 +671,9 @@ elif page == "⚔️  Attack Analysis":
             c1,c2,c3 = st.columns(3, gap="small")
             for col, model, color, cls in zip([c1,c2,c3],
                 ["Random Forest","AdaBoost","XGBoost"],
-                ["linear-gradient(135deg,#63B3ED,#0048FF)",
-                 "linear-gradient(135deg,#4FD1C5,#9F7AEA)",
-                 "linear-gradient(135deg,#FC8181,#F6AD55)"],
+                ["#63B3ED",
+                 "#4FD1C5",
+                 "#FC8181"],
                 ["badge-blue","badge-purple","badge-red"]):
                 if model in pois_dict and model in base_dict:
                     drop = base_dict[model]["F1 Score"] - pois_dict[model]["F1 Score"]
@@ -731,12 +727,12 @@ elif page == "⚔️  Attack Analysis":
             c1,c2,c3 = st.columns(3, gap="small")
             with c1:
                 v = f"{clean.iloc[0]['PR-AUC']:.4f}" if not clean.empty else "—"
-                st.markdown(stat_card("✅","linear-gradient(135deg,#68D391,#4FD1C5)","Clean PR-AUC",v,"Normal inputs","Safe","badge-green"), unsafe_allow_html=True)
+                st.markdown(stat_card("✅","#68D391","Clean PR-AUC",v,"Normal inputs","Safe","badge-green"), unsafe_allow_html=True)
             with c2:
                 asr = trig.iloc[0]["Attack Success Rate"] if not trig.empty else 0
-                st.markdown(stat_card("💀","linear-gradient(135deg,#FC8181,#F6AD55)","Attack Success",f"{asr:.1%}","Triggered inputs","Critical","badge-red"), unsafe_allow_html=True)
+                st.markdown(stat_card("💀","#FC8181","Attack Success",f"{asr:.1%}","Triggered inputs","Critical","badge-red"), unsafe_allow_html=True)
             with c3:
-                st.markdown(stat_card("👁️","linear-gradient(135deg,#9F7AEA,#DF57DA)","Stealth Level","High","Undetected on clean","Covert","badge-purple"), unsafe_allow_html=True)
+                st.markdown(stat_card("👁️","#9F7AEA","Stealth Level","High","Undetected on clean","Covert","badge-purple"), unsafe_allow_html=True)
 
             st.markdown("<br>", unsafe_allow_html=True)
             fig = go.Figure(go.Indicator(

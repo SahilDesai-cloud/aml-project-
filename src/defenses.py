@@ -18,8 +18,12 @@ def simulated_defense_recovery(
     defense_rows = []
 
     for model in ["Random Forest", "AdaBoost", "XGBoost"]:
-        base = baseline_results[baseline_results["Model"] == model].iloc[0]
-        poison = poisoned_results[poisoned_results["Model"] == model].iloc[0]
+        base_rows   = baseline_results[baseline_results["Model"] == model]
+        poison_rows = poisoned_results[poisoned_results["Model"] == model]
+        if base_rows.empty or poison_rows.empty:
+            continue
+        base   = base_rows.iloc[0]
+        poison = poison_rows.iloc[0]
 
         defense_rows.append({
             "Scenario": "After Defense",
